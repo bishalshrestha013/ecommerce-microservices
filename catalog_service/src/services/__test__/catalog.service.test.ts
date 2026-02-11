@@ -1,6 +1,16 @@
+import { faker } from "@faker-js/faker";
 import { ICatalogRepository } from "../../interface/catalogRepository_interface";
 import { MockCatalogRepository } from "../../repository/mockCatalog_repository";
 import { CatalogService } from "../catalog.service";
+
+const mockProduct = (rest: any) => {
+  return {
+    name: faker.commerce.productName(),
+    description: faker.commerce.productDescription(),
+    stock: faker.number.int({ min: 10, max: 100 }),
+    ...rest,
+  };
+};
 
 describe("catalogService", () => {
   let repository: ICatalogRepository;
@@ -19,12 +29,9 @@ describe("catalogService", () => {
     test("should create a product", async () => {
       const service = new CatalogService(repository);
 
-      const reqBody = {
-        name: "Iphone",
-        description: "Smart phone",
-        price: 100,
-        stock: 20,
-      };
+      const reqBody = mockProduct({
+        price: +faker.commerce.price(),
+      });
 
       const result = await service.createProduct(reqBody);
 
