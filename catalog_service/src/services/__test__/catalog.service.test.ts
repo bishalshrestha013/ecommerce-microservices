@@ -57,5 +57,17 @@ describe("catalogService", () => {
 
       await expect(service.createProduct(reqBody)).rejects.toThrow("unable to create product") 
     });
+
+    test("should throw an error with product already exists",async () => {
+      const service = new CatalogService(repository);
+
+      const reqBody = mockProduct({
+        price: +faker.commerce.price(),
+      });
+
+      jest.spyOn(repository, "create").mockImplementationOnce(() => Promise.reject(new Error("product already exists")))
+
+      await expect(service.createProduct(reqBody)).rejects.toThrow("product already exists") 
+    });
   });
 });
