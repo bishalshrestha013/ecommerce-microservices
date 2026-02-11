@@ -9,6 +9,7 @@ const config: Config = {
   coveragePathIgnorePatterns: ["/node_modules"],
   coverageProvider: "v8",
   moduleDirectories: ["node_modules", "src"],
+  extensionsToTreatAsEsm: [".ts"],
 };
 
 export default config;
