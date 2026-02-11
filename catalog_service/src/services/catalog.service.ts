@@ -7,7 +7,11 @@ export class CatalogService {
     this._repository = repository;
   }
 
-  createProduct(input: any) {}
+  async createProduct(input: any) {
+    const data = await this._repository.create(input);
+
+    return data;
+  }
   updateProduct(input: any) {}
   getProducts(limit: number, offset: number) {}
   getProduct(id: number) {}
