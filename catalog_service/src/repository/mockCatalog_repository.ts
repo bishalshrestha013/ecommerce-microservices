@@ -1,4 +1,3 @@
-import { mock } from "node:test";
 import { ICatalogRepository } from "../interface/catalogRepository_interface";
 import { Product } from "../models/product.model";
 
@@ -11,6 +10,7 @@ export class MockCatalogRepository implements ICatalogRepository {
 
     return Promise.resolve(mockProduct);
   }
+
   update(data: Product): Promise<Product> {
     throw new Error("Method not implemented.");
   }

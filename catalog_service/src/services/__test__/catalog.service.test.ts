@@ -2,6 +2,8 @@ import { faker } from "@faker-js/faker";
 import { ICatalogRepository } from "../../interface/catalogRepository_interface";
 import { MockCatalogRepository } from "../../repository/mockCatalog_repository";
 import { CatalogService } from "../catalog.service";
+import { Product } from "../../models/product.model";
+import {describe, expect, jest} from '@jest/globals';
 
 const mockProduct = (rest: any) => {
   return {
@@ -43,6 +45,17 @@ describe("catalogService", () => {
         stock: expect.any(Number),
       });
     });
-    test("should throw an error with product already exists", () => {});
+
+    test("should throw an error with unable to create product",async () => {
+      const service = new CatalogService(repository);
+
+      const reqBody = mockProduct({
+        price: +faker.commerce.price(),
+      });
+
+      jest.spyOn(repository, "create").mockImplementationOnce(() => Promise.resolve({} as Product))
+
+      await expect(service.createProduct(reqBody)).rejects.toThrow("unable to create product") 
+    });
   });
 });
