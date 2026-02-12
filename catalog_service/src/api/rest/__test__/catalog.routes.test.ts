@@ -68,7 +68,7 @@ describe("Catalog Routes", () => {
     });
   });
 
-  describe.only("PATCH /products/:id", () => {
+  describe("PATCH /products/:id", () => {
     test("should update product successfully", async () => {
       const product = ProductFactory.build();
       const requestBody = {
@@ -143,6 +143,34 @@ describe("Catalog Routes", () => {
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual(products);
+    });
+  });
+
+  describe("GET /products/:id", () => {
+    test("should return a product by id", async () => {
+      const product = ProductFactory.build();
+      jest
+        .spyOn(catalogService, "getProduct")
+        .mockImplementationOnce(() => Promise.resolve(product));
+      const response = await request(app)
+        .get(`/products/${product.id}`)
+        .set("Accept", "application/json");
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(product);
+    });
+  });
+
+  describe("DELETE /products/:id", () => {
+    test("should delete a product by id", async () => {
+      const product = ProductFactory.build();
+      jest
+        .spyOn(catalogService, "deleteProduct")
+        .mockImplementationOnce(() => Promise.resolve({ id: product.id! }));
+      const response = await request(app)
+        .delete(`/products/${product.id}`)
+        .set("Accept", "application/json");
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ id: product.id });
     });
   });
 });

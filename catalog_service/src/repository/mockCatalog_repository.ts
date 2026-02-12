@@ -15,8 +15,8 @@ export class MockCatalogRepository implements ICatalogRepository {
     return Promise.resolve(data);
   }
 
-  delete(id: number): Promise<Product> {
-    return Promise.resolve({id} as Product);
+  delete(id: number): Promise<{ id: number }> {
+    return Promise.resolve({ id });
   }
 
   find(limit: number, offset: number): Promise<Product[]> {
@@ -24,6 +24,6 @@ export class MockCatalogRepository implements ICatalogRepository {
   }
 
   findOne(id: number): Promise<Product> {
-    return Promise.resolve({ id } as Product)
+    return Promise.resolve({ id } as Product);
   }
 }
