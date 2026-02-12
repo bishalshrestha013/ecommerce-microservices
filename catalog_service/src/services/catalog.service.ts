@@ -31,6 +31,17 @@ export class CatalogService {
     return products;
   }
 
-  getProduct(id: number) {}
-  deleteProduct(id: number) {}
+  async getProduct(id: number) {
+    const product = await this._repository.findOne(id); 
+
+    return product;
+  }
+
+  async deleteProduct(id: number) {
+    const response = await this._repository.delete(id);
+
+    // delete response from elastic search
+
+    return response;
+  }
 }

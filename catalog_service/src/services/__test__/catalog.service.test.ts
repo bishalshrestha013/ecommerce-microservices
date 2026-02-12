@@ -126,4 +126,32 @@ describe("catalogService", () => {
       await expect(service.getProducts(10, 0)).rejects.toThrow("products does not exists") 
     });
   })
+
+  describe("getProduct", () => {
+    test("should get product by id", async () => {
+      const service = new CatalogService(repository);
+
+      const product = productFactory.build();
+
+      jest.spyOn(repository, "findOne").mockImplementationOnce(() => Promise.resolve(product))
+
+      const result = await service.getProduct(product.id!);
+
+      expect(result).toMatchObject(product as any);
+    });
+  })
+
+  describe("deleteProduct", () => {
+    test("should delete product by id", async () => {
+      const service = new CatalogService(repository);
+
+      const product = productFactory.build();
+
+      jest.spyOn(repository, "delete").mockImplementationOnce(() => Promise.resolve({id: product.id} as Product))
+
+      const result = await service.deleteProduct(product.id!);
+
+      expect(result).toMatchObject({id: product.id});
+    });
+  })
 });

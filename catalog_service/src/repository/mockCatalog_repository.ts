@@ -15,8 +15,8 @@ export class MockCatalogRepository implements ICatalogRepository {
     return Promise.resolve(data);
   }
 
-  delete(id: number): Promise<void> {
-    throw new Error("Method not implemented.");
+  delete(id: number): Promise<Product> {
+    return Promise.resolve({id} as Product);
   }
 
   find(limit: number, offset: number): Promise<Product[]> {
@@ -24,6 +24,6 @@ export class MockCatalogRepository implements ICatalogRepository {
   }
 
   findOne(id: number): Promise<Product> {
-    throw new Error("Method not implemented.");
+    return Promise.resolve({ id } as Product)
   }
 }
