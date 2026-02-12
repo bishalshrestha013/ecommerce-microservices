@@ -4,6 +4,14 @@ import { MockCatalogRepository } from "../../repository/mockCatalog_repository";
 import { CatalogService } from "../catalog.service";
 import { Product } from "../../models/product.model";
 import {describe, expect, jest} from '@jest/globals';
+import { Factory } from "rosie"
+
+const productFactory = new Factory<Product>()
+  .attr("id", faker.number.int({min: 1, max: 100}))
+  .attr("name", faker.commerce.productName())
+  .attr("description", faker.commerce.productDescription())
+  .attr("price", +faker.commerce.price())
+  .attr("stock", faker.number.int({min: 10, max: 100}))
 
 const mockProduct = (rest: any) => {
   return {
@@ -70,4 +78,52 @@ describe("catalogService", () => {
       await expect(service.createProduct(reqBody)).rejects.toThrow("product already exists") 
     });
   });
+
+  describe("updateProduct", () => {
+    test("should update a product", async () => {
+      const service = new CatalogService(repository);
+
+      const reqBody = mockProduct({
+        price: +faker.commerce.price(),
+        id: faker.number.int({min:10, max: 100})
+      });
+
+      const result = await service.updateProduct(reqBody);
+
+      expect(result).toMatchObject(reqBody);
+    });
+
+    test("should throw an error with product doesn't exists",async () => {
+      const service = new CatalogService(repository);
+
+      jest.spyOn(repository, "update").mockImplementationOnce(() => Promise.reject(new Error("product does not exists")))
+
+      await expect(service.updateProduct({} as Product)).rejects.toThrow("product does not exists") 
+    });
+  })
+
+  describe("getProducts", () => {
+    test("should get products by offset and limit", async () => {
+      const service = new CatalogService(repository);
+
+      const randomLimit = faker.number.int({min:10, max: 100})
+
+      const products = productFactory.buildList(randomLimit);
+
+      jest.spyOn(repository, "find").mockImplementationOnce(() => Promise.resolve(products))
+
+      const result = await service.getProducts(randomLimit, 0);
+
+      expect(result.length).toEqual(randomLimit);
+      expect(result).toEqual(products);
+    });
+
+    test("should throw an error with products doesn't exists",async () => {
+      const service = new CatalogService(repository);
+
+      jest.spyOn(repository, "find").mockImplementationOnce(() => Promise.reject(new Error("products does not exists")))
+
+      await expect(service.getProducts(10, 0)).rejects.toThrow("products does not exists") 
+    });
+  })
 });

@@ -16,8 +16,21 @@ export class CatalogService {
 
     return data;
   }
-  updateProduct(input: any) {}
-  getProducts(limit: number, offset: number) {}
+
+  async updateProduct(input: any) {
+    const data = await this._repository.update(input);
+
+    // emit event to update record in Elastic search
+
+    return data;
+  }
+
+  async getProducts(limit: number, offset: number) {
+    const products = await this._repository.find(limit, offset);
+
+    return products;
+  }
+
   getProduct(id: number) {}
   deleteProduct(id: number) {}
 }
