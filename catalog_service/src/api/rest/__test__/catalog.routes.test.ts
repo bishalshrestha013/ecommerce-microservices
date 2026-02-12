@@ -67,4 +67,57 @@ describe("Catalog Routes", () => {
       expect(response.body).toEqual("error occured on create product");
     });
   });
+
+  describe.only("PATCH /products/:id", () => {
+    test("should update product successfully", async () => {
+      const product = ProductFactory.build();
+      const requestBody = {
+        name: product.name,
+        price: product.price,
+        stock: product.stock,
+      };
+
+      jest
+        .spyOn(catalogService, "updateProduct")
+        .mockImplementationOnce(() => Promise.resolve(product));
+
+      const response = await request(app)
+        .patch(`/products/${product.id}`)
+        .send(requestBody)
+        .set("Accept", "application/json");
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(product);
+    });
+
+    // test("should response with validation error 400", async () => {
+    //   const requestBody = mockRequest();
+
+    //   const response = await request(app)
+    //     .post("/products")
+    //     .send({ ...requestBody, name: "" })
+    //     .set("Accept", "application/json");
+
+    //   expect(response.status).toBe(400);
+    //   expect(response.body).toEqual("name should not be empty");
+    // });
+
+    // test("should response with an internal error code 500", async () => {
+    //   const requestBody = mockRequest();
+
+    //   jest
+    //     .spyOn(catalogService, "createProduct")
+    //     .mockImplementationOnce(() =>
+    //       Promise.reject(new Error("error occured on create product")),
+    //     );
+
+    //   const response = await request(app)
+    //     .post("/products")
+    //     .send(requestBody)
+    //     .set("Accept", "application/json");
+
+    //   expect(response.status).toBe(500);
+    //   expect(response.body).toEqual("error occured on create product");
+    // });
+  });
 });
