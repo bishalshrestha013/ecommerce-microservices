@@ -42,11 +42,29 @@ describe("Catalog Routes", () => {
 
       const response = await request(app)
         .post("/products")
-        .send({...requestBody, name: ""})
+        .send({ ...requestBody, name: "" })
         .set("Accept", "application/json");
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual("name should not be empty");
+    });
+
+    test("should response with an internal error code 500", async () => {
+      const requestBody = mockRequest();
+
+      jest
+        .spyOn(catalogService, "createProduct")
+        .mockImplementationOnce(() =>
+          Promise.reject(new Error("error occured on create product")),
+        );
+
+      const response = await request(app)
+        .post("/products")
+        .send(requestBody)
+        .set("Accept", "application/json");
+
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual("error occured on create product");
     });
   });
 });
