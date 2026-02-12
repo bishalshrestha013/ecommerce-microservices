@@ -3,15 +3,8 @@ import { ICatalogRepository } from "../../interface/catalogRepository_interface"
 import { MockCatalogRepository } from "../../repository/mockCatalog_repository";
 import { CatalogService } from "../catalog.service";
 import { Product } from "../../models/product.model";
-import {describe, expect, jest} from '@jest/globals';
-import { Factory } from "rosie"
-
-const productFactory = new Factory<Product>()
-  .attr("id", faker.number.int({min: 1, max: 100}))
-  .attr("name", faker.commerce.productName())
-  .attr("description", faker.commerce.productDescription())
-  .attr("price", +faker.commerce.price())
-  .attr("stock", faker.number.int({min: 10, max: 100}))
+import { describe, expect, jest } from "@jest/globals";
+import { ProductFactory } from "../../utils/fixtures";
 
 const mockProduct = (rest: any) => {
   return {
@@ -54,28 +47,38 @@ describe("catalogService", () => {
       });
     });
 
-    test("should throw an error with unable to create product",async () => {
+    test("should throw an error with unable to create product", async () => {
       const service = new CatalogService(repository);
 
       const reqBody = mockProduct({
         price: +faker.commerce.price(),
       });
 
-      jest.spyOn(repository, "create").mockImplementationOnce(() => Promise.resolve({} as Product))
+      jest
+        .spyOn(repository, "create")
+        .mockImplementationOnce(() => Promise.resolve({} as Product));
 
-      await expect(service.createProduct(reqBody)).rejects.toThrow("unable to create product") 
+      await expect(service.createProduct(reqBody)).rejects.toThrow(
+        "unable to create product",
+      );
     });
 
-    test("should throw an error with product already exists",async () => {
+    test("should throw an error with product already exists", async () => {
       const service = new CatalogService(repository);
 
       const reqBody = mockProduct({
         price: +faker.commerce.price(),
       });
 
-      jest.spyOn(repository, "create").mockImplementationOnce(() => Promise.reject(new Error("product already exists")))
+      jest
+        .spyOn(repository, "create")
+        .mockImplementationOnce(() =>
+          Promise.reject(new Error("product already exists")),
+        );
 
-      await expect(service.createProduct(reqBody)).rejects.toThrow("product already exists") 
+      await expect(service.createProduct(reqBody)).rejects.toThrow(
+        "product already exists",
+      );
     });
   });
 
@@ -85,7 +88,7 @@ describe("catalogService", () => {
 
       const reqBody = mockProduct({
         price: +faker.commerce.price(),
-        id: faker.number.int({min:10, max: 100})
+        id: faker.number.int({ min: 10, max: 100 }),
       });
 
       const result = await service.updateProduct(reqBody);
@@ -93,24 +96,32 @@ describe("catalogService", () => {
       expect(result).toMatchObject(reqBody);
     });
 
-    test("should throw an error with product doesn't exists",async () => {
+    test("should throw an error with product doesn't exists", async () => {
       const service = new CatalogService(repository);
 
-      jest.spyOn(repository, "update").mockImplementationOnce(() => Promise.reject(new Error("product does not exists")))
+      jest
+        .spyOn(repository, "update")
+        .mockImplementationOnce(() =>
+          Promise.reject(new Error("product does not exists")),
+        );
 
-      await expect(service.updateProduct({} as Product)).rejects.toThrow("product does not exists") 
+      await expect(service.updateProduct({} as Product)).rejects.toThrow(
+        "product does not exists",
+      );
     });
-  })
+  });
 
   describe("getProducts", () => {
     test("should get products by offset and limit", async () => {
       const service = new CatalogService(repository);
 
-      const randomLimit = faker.number.int({min:10, max: 100})
+      const randomLimit = faker.number.int({ min: 10, max: 100 });
 
-      const products = productFactory.buildList(randomLimit);
+      const products = ProductFactory.buildList(randomLimit);
 
-      jest.spyOn(repository, "find").mockImplementationOnce(() => Promise.resolve(products))
+      jest
+        .spyOn(repository, "find")
+        .mockImplementationOnce(() => Promise.resolve(products));
 
       const result = await service.getProducts(randomLimit, 0);
 
@@ -118,40 +129,52 @@ describe("catalogService", () => {
       expect(result).toEqual(products);
     });
 
-    test("should throw an error with products doesn't exists",async () => {
+    test("should throw an error with products doesn't exists", async () => {
       const service = new CatalogService(repository);
 
-      jest.spyOn(repository, "find").mockImplementationOnce(() => Promise.reject(new Error("products does not exists")))
+      jest
+        .spyOn(repository, "find")
+        .mockImplementationOnce(() =>
+          Promise.reject(new Error("products does not exists")),
+        );
 
-      await expect(service.getProducts(10, 0)).rejects.toThrow("products does not exists") 
+      await expect(service.getProducts(10, 0)).rejects.toThrow(
+        "products does not exists",
+      );
     });
-  })
+  });
 
   describe("getProduct", () => {
     test("should get product by id", async () => {
       const service = new CatalogService(repository);
 
-      const product = productFactory.build();
+      const product = ProductFactory.build();
 
-      jest.spyOn(repository, "findOne").mockImplementationOnce(() => Promise.resolve(product))
+      jest
+        .spyOn(repository, "findOne")
+        .mockImplementationOnce(() => Promise.resolve(product));
 
       const result = await service.getProduct(product.id!);
 
       expect(result).toMatchObject(product as any);
     });
-  })
+  });
 
   describe("deleteProduct", () => {
     test("should delete product by id", async () => {
       const service = new CatalogService(repository);
 
-      const product = productFactory.build();
+      const product = ProductFactory.build();
 
-      jest.spyOn(repository, "delete").mockImplementationOnce(() => Promise.resolve({id: product.id} as Product))
+      jest
+        .spyOn(repository, "delete")
+        .mockImplementationOnce(() =>
+          Promise.resolve({ id: product.id } as Product),
+        );
 
       const result = await service.deleteProduct(product.id!);
 
-      expect(result).toMatchObject({id: product.id});
+      expect(result).toMatchObject({ id: product.id });
     });
-  })
+  });
 });

@@ -1,0 +1,40 @@
+import request from "supertest";
+import express from "express";
+import { describe, expect, jest } from "@jest/globals";
+import { faker } from "@faker-js/faker";
+import catalogRoutes, { catalogService } from "../catalog.routes";
+import { ProductFactory } from "../../../utils/fixtures";
+
+const app = express();
+app.use(express.json());
+app.use(catalogRoutes);
+
+const mockRequest = () => {
+  return {
+    name: faker.commerce.productName(),
+    description: faker.commerce.productDescription(),
+    price: +faker.commerce.price(),
+    stock: faker.number.int({ min: 10, max: 100 }),
+  };
+};
+
+describe("Catalog Routes", () => {
+  describe("POST /products", () => {
+    test("should create product successfully", async () => {
+      const requestBody = mockRequest();
+      const product = ProductFactory.build();
+
+      jest
+        .spyOn(catalogService, "createProduct")
+        .mockImplementationOnce(() => Promise.resolve(product));
+
+      const response = await request(app)
+        .post("/products")
+        .send(requestBody)
+        .set("Accept", "application/json");
+
+      expect(response.status).toBe(201);
+      expect(response.body).toEqual(product);
+    });
+  });
+});
