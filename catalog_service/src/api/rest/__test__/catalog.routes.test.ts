@@ -36,5 +36,17 @@ describe("Catalog Routes", () => {
       expect(response.status).toBe(201);
       expect(response.body).toEqual(product);
     });
+
+    test("should response with validation error 400", async () => {
+      const requestBody = mockRequest();
+
+      const response = await request(app)
+        .post("/products")
+        .send({...requestBody, name: ""})
+        .set("Accept", "application/json");
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual("name should not be empty");
+    });
   });
 });
